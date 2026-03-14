@@ -21,6 +21,18 @@ documents/
 main.py
 
 ## How to Run
-
-```bash
 python main.py
+
+## Version
+
+Current Version: v1.0  
+- TF-IDF based document search
+- CLI interface
+- Multi-document ranking
+
+Upcoming Version (v2.0)
+- Flask web interface
+- Semantic search using embeddings
+- Large document support
+- Upload custom documents
+
