@@ -52,4 +52,3 @@ else:
     print("\nSearch results")
     for name, score in sorted_scores:
         print(f"{name} 'n {score} matches")
-
