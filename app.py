@@ -1,4 +1,5 @@
 from flask import Flask, render_template,request
+from main import get_search_results
 app = Flask(__name__)
 
 @app.route("/", methods=["GET","POST"])
@@ -6,11 +7,13 @@ def home():
     if request.method == "POST":
         user_query = request.form["user_query"]
 
-        return render_template(
-            "index.html",
-            message=user_query
-        )
+        search_scores=get_search_results(user_query)
 
-    return render_template("index.html",message="Search engine logic is ready!")
+        return render_template("index.html",message=f"Results for:{user_query}",results=search_scores)
+    return render_template(
+        "index.html",
+        message="Search engine logic is ready!", 
+        results=None)
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -10,7 +10,24 @@
         <button type="submit">Search</button>
     </form>
     {% if message %}
-        <p><strong>You searched for:</strong>{{ message }}</p> 
+        <p><strong>{{ message }}</strong></p>
+    {% endif %}
+
+    {% if results is not none %}
+        
+        {% if results|length == 0 %}
+            <p>No matching documents found. Try another word!</p>
+        
+        {% else %}
+            <ul>
+                {% for name, score in results %}
+                    <li>
+                        <strong>{{ name }}</strong> — Relevance Score: {{ score }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
     {% endif %}
 </body>
 </html>
