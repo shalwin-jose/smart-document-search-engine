@@ -8,6 +8,16 @@
     <form method="POST">
         <input type="text" name="user_query" placeholder="Type your search here....🔎" autocomplete="off">
         <button type="submit">Search</button>
+        <div style="margin-top: 10px;">
+        <label>
+            <input type="radio" name="search_type" value="exact" checked> 
+            Exact Match (TF-IDF)
+        </label>
+        <label style="margin-left: 15px;">
+            <input type="radio" name="search_type" value="semantic"> 
+            AI Semantic Search
+        </label>
+    </div>
     </form>
     {% if message %}
         <p><strong>{{ message }}</strong></p>
