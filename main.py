@@ -1,9 +1,7 @@
 import os
 import string
 import math
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
-from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer, util
 
 
 def get_search_results(user_query, search_type="exact"):
@@ -23,22 +21,16 @@ def get_search_results(user_query, search_type="exact"):
         if not docs:
             return []
 
-        vectorizer = TfidfVectorizer(stop_words='english')
-        tfidf_matrix = vectorizer.fit_transform(docs)
-        
-        n_comp = min(2, len(docs) - 1) if len(docs) > 1 else 1
-        svd = TruncatedSVD(n_components=n_comp, random_state=42)
-        semantic_matrix = svd.fit_transform(tfidf_matrix)
-        
-        query_tfidf = vectorizer.transform([user_query])
-        query_semantic = svd.transform(query_tfidf)
-        
-        scores = cosine_similarity(query_semantic, semantic_matrix)[0]
+        model= SentenceTransformer('all-MiniLM-L6-v2')
+        doc_embeddings = model.encode(docs)
+        query_embedding = model.encode([user_query])
 
+        scores = util.cos_sim(query_embedding, doc_embeddings)[0]
         results = []
         for idx, score in enumerate(scores):
-            if score > 0.01: 
-                results.append((filenames[idx], round(score, 4)))
+            final_score=float(score)
+            if final_score > 0.05: 
+                results.append((filenames[idx], round(final_score, 4)))
         return sorted(results, key=lambda x: x[1], reverse=True)
 
     if search_type=="semantic":
