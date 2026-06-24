@@ -40,9 +40,9 @@ A dual-engine web application built in Python that allows users to seamlessly to
 
 ### Version 2.0 (Current)
 * Migrated to a Flask web architecture. Implemented Latent Semantic Analysis (LSA) using `scikit-learn` to allow for baseline conceptual matching alongside the custom TF-IDF engine. 
+* *Scale Update:* Integrated a sliding-window text chunker (500 chars/50 overlap) with result deduplication. This prevents the transformer model from truncating large files and dramatically increases the precision of semantic retrieval without crashing local memory.
 
 ### Version 3.0 (Upcoming)
 * **Pre-Trained AI Upgrade:** Replacing `scikit-learn` with Hugging Face `sentence-transformers` for true global vocabulary awareness and synonym detection.
-* **Scalability:** Implementing text-chunking to support massive document processing without memory faults.
 * **UI Polish:** Full CSS styling for a modern, responsive layout.
 

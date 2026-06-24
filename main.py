@@ -2,35 +2,50 @@ import os
 import string
 import math
 from sentence_transformers import SentenceTransformer, util
-
+model= SentenceTransformer('all-MiniLM-L6-v2')
+def chunk_text(text, chunk_size=500, overlap=50):
+    """Breaks large text into smaller overlapping blocks for AI processing."""
+    chunks = []
+    start = 0
+    while start < len(text):
+        end = start + chunk_size
+        chunks.append(text[start:end])
+        start += (chunk_size - overlap)
+    return chunks
 
 def get_search_results(user_query, search_type="exact"):
     folder_path="documents"
     if search_type == "semantic":
-        docs = []
-        filenames = []
+        all_chunks=[]
+        chunk_metadata=[]
 
         if os.path.exists(folder_path):
             for filename in os.listdir(folder_path):
                 if filename.endswith(".txt"):
                     file_path = os.path.join(folder_path, filename)
                     with open(file_path, "r", encoding="utf-8") as file:
-                        docs.append(file.read().lower())
-                        filenames.append(filename)
+                        raw_text = file.read()
+                        document_chunks=chunk_text(raw_text)
+                        for chunks in document_chunks:
+                            all_chunks.append(chunks)
+                            chunk_metadata.append(filename)
+                        
 
-        if not docs:
+        if not all_chunks:
             return []
 
-        model= SentenceTransformer('all-MiniLM-L6-v2')
-        doc_embeddings = model.encode(docs)
-        query_embedding = model.encode([user_query])
+        doc_embeddings = model.encode(all_chunks)
+        query_embedding = model.encode(user_query)
 
         scores = util.cos_sim(query_embedding, doc_embeddings)[0]
         results = []
+        seen_files=set()
         for idx, score in enumerate(scores):
             final_score=float(score)
-            if final_score > 0.05: 
-                results.append((filenames[idx], round(final_score, 4)))
+            matched_filename=chunk_metadata[idx]
+            if final_score > 0.05 and matched_filename not in seen_files: 
+                results.append((matched_filename, round(final_score, 4)))
+                seen_files.add(matched_filename)
         return sorted(results, key=lambda x: x[1], reverse=True)
 
     if search_type=="semantic":
